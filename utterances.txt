@@ -1,0 +1,18 @@
+EtymologyIntent what is the etymology of {Word}
+
+EtymologyIntent what is the origin of {Word}
+
+EtymologyIntent what is the source of {Word}
+
+EtymologyIntent where is {Word} from
+
+EtymologyIntent where does {Word} come from
+
+EtymologyIntent how was {Word} first used
+
+EtymologyIntent why does {Word} mean what it does
+
+EtymologyIntent {Word}
+
+
+AMAZON.StartOverIntent start
