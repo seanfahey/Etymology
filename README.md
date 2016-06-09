@@ -22,13 +22,17 @@ TODO: setting up lambda
 
 Alexa skills support 60000 characters of custom slot types. Using a list of the top 10,000 most common words from Google it was pared down from ~75000 chars in vim with this commands:
 remove duplicate words with -s at the end
+
 `:g/[a-z]+s\n/d`
 
 Ideas for trimming larger word lists:
 
 remove -ing words
+
 `:g/[a-z]+ing/d`
+
 remove -ly words
+
 `:g/[a-z]+ly/d`
 
 ## History

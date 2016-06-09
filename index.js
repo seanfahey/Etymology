@@ -128,7 +128,6 @@ function handleWordRequest(intent, session, callback) {
     var speechOutput = "";
     var sessionAttributes = {};
     var speechError = "Failed lookup";
-    //var answerSlotValid = isAnswerSlotValid(intent);
 
 	speechOutput = 'Ok, looking up ' + intent.slots.Word.value;
 
@@ -171,77 +170,6 @@ function handleWordRequest(intent, session, callback) {
 		callback(sessionAttributes,
 			buildSpeechletResponse(CARD_TITLE, speechError + "Request error: " + err.message, speechReprompt, false));
 	});
-
-/*
-    if (!gameInProgress) {
-        // If the user responded with an answer but there is no game in progress, ask the user
-        // if they want to start a new game. Set a flag to track that we've prompted the user.
-        sessionAttributes.userPromptedToContinue = true;
-        speechOutput = "There is no game in progress. Do you want to start a new game? ";
-        callback(sessionAttributes,
-            buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
-    } else if (!answerSlotValid && !userGaveUp) {
-        // If the user provided answer isn't a number > 0 and < ANSWER_COUNT,
-        // return an error message to the user. Remember to guide the user into providing correct values.
-        var reprompt = session.attributes.speechOutput;
-        speechOutput = "Your answer must be a number between 1 and " + ANSWER_COUNT + ". " + reprompt;
-        callback(session.attributes,
-            buildSpeechletResponse(CARD_TITLE, speechOutput, reprompt, false));
-    } else {
-        var gameQuestions = session.attributes.questions,
-            correctAnswerIndex = parseInt(session.attributes.correctAnswerIndex),
-            currentScore = parseInt(session.attributes.score),
-            currentQuestionIndex = parseInt(session.attributes.currentQuestionIndex),
-            correctAnswerText = session.attributes.correctAnswerText;
-
-        var speechOutputAnalysis = "";
-
-        if (answerSlotValid && parseInt(intent.slots.Word.value) == correctAnswerIndex) {
-            currentScore++;
-            speechOutputAnalysis = "correct. ";
-        } else {
-            if (!userGaveUp) {
-                speechOutputAnalysis = "wrong. "
-            }
-            speechOutputAnalysis += "The correct answer is " + correctAnswerIndex + ": " + correctAnswerText + ". ";
-        }
-        // if currentQuestionIndex is 4, we've reached 5 questions (zero-indexed) and can exit the game session
-        if (currentQuestionIndex == GAME_LENGTH - 1) {
-            speechOutput = userGaveUp ? "" : "That answer is ";
-            speechOutput += speechOutputAnalysis + "You got " + currentScore.toString() + " out of "
-                + GAME_LENGTH.toString() + " questions correct. Thank you for playing!";
-            callback(session.attributes,
-                buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
-        } else {
-            currentQuestionIndex += 1;
-            var spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]])[0];
-            // Generate a random index for the correct answer, from 0 to 3
-            correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT));
-            var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
-
-                questionIndexForSpeech = currentQuestionIndex + 1,
-                repromptText = "Question " + questionIndexForSpeech.toString() + ". " + spokenQuestion + " ";
-            for (var i = 0; i < ANSWER_COUNT; i++) {
-                repromptText += (i+1).toString() + ". " + roundAnswers[i] + ". "
-            }
-            speechOutput += userGaveUp ? "" : "That answer is ";
-            speechOutput += speechOutputAnalysis + "Your score is " + currentScore.toString() + ". " + repromptText;
-
-            sessionAttributes = {
-                "speechOutput": repromptText,
-                "repromptText": repromptText,
-                "currentQuestionIndex": currentQuestionIndex,
-                "correctAnswerIndex": correctAnswerIndex + 1,
-                "questions": gameQuestions,
-                "score": currentScore,
-                "correctAnswerText":
-                    questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
-            };
-            callback(sessionAttributes,
-                buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
-        }
-    }
-    */
 }
 
 function handleRepeatRequest(intent, session, callback) {
@@ -279,14 +207,7 @@ function handleFinishSessionRequest(intent, session, callback) {
         buildSpeechletResponseWithoutCard("Until next time", "", true));
 }
 
-function isAnswerSlotValid(intent) {
-    var answerSlotFilled = intent.slots && intent.slots.Answer && intent.slots.Answer.value;
-    var answerSlotIsInt = answerSlotFilled && !isNaN(parseInt(intent.slots.Answer.value));
-    return answerSlotIsInt && parseInt(intent.slots.Answer.value) < (ANSWER_COUNT + 1) && parseInt(intent.slots.Answer.value) > 0;
-}
-
 // ------- Helper functions to build responses -------
-
 
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
     return {
@@ -331,129 +252,4 @@ function buildResponse(sessionAttributes, speechletResponse) {
         sessionAttributes: sessionAttributes,
         response: speechletResponse
     };
-}
-
-/**
- * Control events are processed here.
- * This is called when Alexa requests an action (IE turn off appliance).
- */
-function handleControl(event, context) {
-
-    /**
-     * Fail the invocation if the header is unexpected. This example only demonstrates
-     * turn on / turn off, hence we are filtering on anything that is not SwitchOnOffRequest.
-     */
-    if (event.header.namespace != 'Control' || event.header.name != 'SwitchOnOffRequest') {
-        context.fail(generateControlError('SwitchOnOffRequest', 'UNSUPPORTED_OPERATION', 'Unrecognized operation'));
-    }
-
-    if (event.header.namespace === 'Control' && event.header.name === 'SwitchOnOffRequest') {
-
-        /**
-         * Retrieve the appliance id and accessToken from the incoming message.
-         */
-        var applianceId = event.payload.appliance.applianceId;
-        var accessToken = event.payload.accessToken.trim();
-        log('applianceId', applianceId);
-
-        /**
-         * Make a remote call to execute the action based on accessToken and the applianceId and the switchControlAction
-         * Some other examples of checks:
-         *	validate the appliance is actually reachable else return TARGET_OFFLINE error
-         *	validate the authentication has not expired else return EXPIRED_ACCESS_TOKEN error
-         * Please see the technical documentation for detailed list of errors
-         */
-        var basePath = '';
-        if (event.payload.switchControlAction === 'TURN_ON') {
-            basePath = REMOTE_CLOUD_BASE_PATH + '/' + applianceId + '/on?access_token=' + accessToken;
-        } else if (event.payload.switchControlAction === 'TURN_OFF') {
-            basePath = REMOTE_CLOUD_BASE_PATH + '/' + applianceId + '/of?access_token=' + accessToken;
-        }
-
-        var options = {
-            hostname: REMOTE_CLOUD_HOSTNAME,
-            port: 443,
-            path: REMOTE_CLOUD_BASE_PATH,
-            headers: {
-                accept: '*/*'
-            }
-        };
-
-        var serverError = function (e) {
-            log('Error', e.message);
-            /**
-             * Craft an error response back to Alexa Smart Home Skill
-             */
-            context.fail(generateControlError('SwitchOnOffRequest', 'DEPENDENT_SERVICE_UNAVAILABLE', 'Unable to connect to server'));
-        };
-
-        var callback = function(response) {
-            var str = '';
-
-            response.on('data', function(chunk) {
-                str += chunk.toString('utf-8');
-            });
-
-            response.on('end', function() {
-                /**
-                 * Test the response from remote endpoint (not shown) and craft a response message
-                 * back to Alexa Smart Home Skill
-                 */
-                log('done with result');
-                var headers = {
-                    namespace: 'Control',
-                    name: 'SwitchOnOffResponse',
-                    payloadVersion: '1'
-                };
-                var payloads = {
-                    success: true
-                };
-                var result = {
-                    header: headers,
-                    payload: payloads
-                };
-                log('Done with result', result);
-                context.succeed(result);
-            });
-
-            response.on('error', serverError);
-        };
-
-        /**
-         * Make an HTTPS call to remote endpoint.
-         */
-        https.get(options, callback)
-            .on('error', serverError).end();
-    }
-}
-
-/**
- * Utility functions.
- */
-function log(title, msg) {
-    console.log('*************** ' + title + ' *************');
-    console.log(msg);
-    console.log('*************** ' + title + ' End*************');
-}
-
-function generateControlError(name, code, description) {
-    var headers = {
-        namespace: 'Control',
-        name: name,
-        payloadVersion: '1'
-    };
-
-    var payload = {
-        exception: {
-            code: code,
-            description: description
-        }
-    };
-
-    var result = {
-        header: headers,
-        payload: payload
-    };
-
-    return result;
 }
