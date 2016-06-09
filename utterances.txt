@@ -1,16 +1,38 @@
 EtymologyIntent what is the etymology of {Word}
 
+EtymologyIntent what is the etymology of the word {Word}
+
 EtymologyIntent what is the origin of {Word}
+
+EtymologyIntent what is the origin of the word {Word}
 
 EtymologyIntent what is the source of {Word}
 
+EtymologyIntent what is the source of the word {Word}
+
 EtymologyIntent where is {Word} from
+
+EtymologyIntent where is the word {Word} from
 
 EtymologyIntent where does {Word} come from
 
+EtymologyIntent where does the word {Word} come from
+
 EtymologyIntent how was {Word} first used
 
+EtymologyIntent how was the word {Word} first used
+
 EtymologyIntent why does {Word} mean what it does
+
+EtymologyIntent why does the word {Word} mean what it does
+
+EtymologyIntent about {Word}
+
+EtymologyIntent about the word {Word}
+
+EtymologyIntent for {Word}
+
+EtymologyIntent for the word {Word}
 
 EtymologyIntent {Word}
 
