@@ -150,17 +150,18 @@ function handleWordRequest(intent, session, callback) {
 		});
 		response.on('end', function() {
 			console.log('response.on end');
-			console.log(response);
 			console.log(data);
 
 			//parse the input
 			var cheerio = require('cheerio'),
-				$ = cheerio.load(data);
+				$ = cheerio.load(data),
+				//where the entry for etymonline is located on the page
+				entry = $('dd.highlight').text();
 
-			//$.html();
+			console.log(entry);
 
 			callback(sessionAttributes,
-				buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, false));
+				buildSpeechletResponse(CARD_TITLE, speechOutput + entry, speechReprompt, false));
 		});
 
 	});
