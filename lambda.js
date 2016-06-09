@@ -110,35 +110,66 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // ------- Skill specific business logic -------
 
-var ANSWER_COUNT = 4;
-var GAME_LENGTH = 5;
 var CARD_TITLE = "Etymology"; // Be sure to change this for your skill.
+var speechReprompt =  "What word would you like me to find out about?";
 
 function getWelcomeResponse(callback) {
-    var sessionAttributes = {},
-        speechOutput = "What word would you like me to find out about?",
-        shouldEndSession = false,
-        repromptText = "What word would you like me to find out about?";
-
-    speechOutput += repromptText;
-    sessionAttributes = {
+    var shouldEndSession = false,
+		speechOutput = speechReprompt,
+		sessionAttributes = {
         "speechOutput": repromptText,
         "repromptText": repromptText
     };
     callback(sessionAttributes,
-        buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+        buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, shouldEndSession));
 }
 
 function handleWordRequest(intent, session, callback) {
     var speechOutput = "";
     var sessionAttributes = {};
-    var gameInProgress = session.attributes;
-    var answerSlotValid = isAnswerSlotValid(intent);
+    var speechError = "Failed lookup";
+    //var answerSlotValid = isAnswerSlotValid(intent);
 
-	speechOutput = 'ok sean, ' + intent.slots.Word.value;
+	speechOutput = 'Ok, looking up ' + intent.slots.Word.value;
 
-	callback(sessionAttributes,
-		buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
+	console.log('loggin it');
+
+	var http = require('http');
+	var options = {
+		host: 'www.etymonline.com',
+		path: '/index.php?term='+ intent.slots.Word.value
+	};
+	var request = http.get(options, function(response) {
+		console.log('in http.get');
+
+		// handle the response
+		var data = '';
+		response.on('data', function(chunk) {
+			console.log('response.on data');
+			data += chunk;
+		});
+		response.on('end', function() {
+			console.log('response.on end');
+			console.log(response);
+			console.log(data);
+
+			//parse the input
+			var cheerio = require('cheerio'),
+				$ = cheerio.load(data);
+
+			//$.html();
+
+			callback(sessionAttributes,
+				buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, false));
+		});
+
+	});
+	request.on('error', function(err) {
+		console.log("Request error: " + err.message);
+
+		callback(sessionAttributes,
+			buildSpeechletResponse(CARD_TITLE, speechError + "Request error: " + err.message, speechReprompt, false));
+	});
 
 /*
     if (!gameInProgress) {
@@ -244,7 +275,7 @@ function handleGetHelpRequest(intent, session, callback) {
 function handleFinishSessionRequest(intent, session, callback) {
     // End the session with a "Good bye!" if the user wants to quit the game
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard("Good bye!", "", true));
+        buildSpeechletResponseWithoutCard("Until next time", "", true));
 }
 
 function isAnswerSlotValid(intent) {
