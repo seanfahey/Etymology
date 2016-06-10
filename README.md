@@ -4,7 +4,7 @@ Learn more about the origins of words with the Etymology skill for Alexa on Amaz
 
 Currently looking up words via the Online Etymology Dictionary (http://www.etymonline.com/) but look for more sources to be added soon.
 
-The list of words is currently limited to 7,959. Look for the number of words to be increased soon.
+The list of words is currently limited to 7,958. Look for the number of words to be increased soon.
 
 ## Installation
 
