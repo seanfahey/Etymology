@@ -36,5 +36,16 @@ EtymologyIntent for the word {Word}
 
 EtymologyIntent {Word}
 
-
 AMAZON.StartOverIntent start
+
+AMAZON.RepeatIntent repeat
+
+AMAZON.HelpIntent help
+
+AMAZON.StopIntent stop
+
+AMAZON.StopIntent cancel
+
+AMAZON.StopIntent exit
+
+AMAZON.StopIntent quit

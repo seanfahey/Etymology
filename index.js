@@ -1,5 +1,7 @@
 'use strict';
 
+var speechReprompt =  "What word would you like me to find out about?";
+
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
 exports.handler = function (event, context) {
@@ -110,26 +112,25 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // ------- Skill specific business logic -------
 
-var CARD_TITLE = "Etymology"; // Be sure to change this for your skill.
-var speechReprompt =  "What word would you like me to find out about?";
+var CARD_TITLE = "Etymonster"; // Be sure to change this for your skill.
 
 function getWelcomeResponse(callback) {
-    var shouldEndSession = false,
-		speechOutput = speechReprompt,
+    var speechOutput = speechReprompt,
 		sessionAttributes = {
-        "speechOutput": repromptText,
-        "repromptText": repromptText
+        "speechOutput": speechOutput,
+        "repromptText": speechReprompt
     };
     callback(sessionAttributes,
-        buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, shouldEndSession));
+        buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
 }
 
 function handleWordRequest(intent, session, callback) {
-    var speechOutput = "";
-    var sessionAttributes = {};
-    var speechError = "Failed lookup";
-
-	speechOutput = 'Ok, looking up ' + intent.slots.Word.value;
+    var speechOutput = 'Ok, looking up ' + intent.slots.Word.value + '. ',
+		speechError = "Failed lookup",
+		sessionAttributes = {
+			"speechOutput": speechOutput,
+			"repromptText": speechReprompt
+		};
 
 	console.log('loggin it');
 
@@ -159,16 +160,14 @@ function handleWordRequest(intent, session, callback) {
 
 			console.log(entry);
 
-			callback(sessionAttributes,
-				buildSpeechletResponse(CARD_TITLE, speechOutput + entry, speechReprompt, false));
+			callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput + entry, speechReprompt, true));
 		});
 
 	});
 	request.on('error', function(err) {
 		console.log("Request error: " + err.message);
 
-		callback(sessionAttributes,
-			buildSpeechletResponse(CARD_TITLE, speechError + "Request error: " + err.message, speechReprompt, false));
+		callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechError + "Request error: " + err.message, speechReprompt, false));
 	});
 }
 
@@ -194,11 +193,10 @@ function handleGetHelpRequest(intent, session, callback) {
     // Set a flag to track that we're in the Help state.
     session.attributes.userPromptedToContinue = true;
 
-    var speechOutput = "Ask me about the origin of a word and I will tell you.",
+    var speechOutput = "Ask me about the origin of a word and I will tell you about it.",
         repromptText = "Would you like to ask about another word?";
-        var shouldEndSession = false;
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard(speechOutput, repromptText, shouldEndSession));
+        buildSpeechletResponseWithoutCard(speechOutput, repromptText, false));
 }
 
 function handleFinishSessionRequest(intent, session, callback) {
