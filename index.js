@@ -112,7 +112,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // ------- Skill specific business logic -------
 
-var CARD_TITLE = "Etymonster"; // Be sure to change this for your skill.
+var CARD_TITLE = "Word Source";
 
 function getWelcomeResponse(callback) {
     var speechOutput = speechReprompt,
