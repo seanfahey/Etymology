@@ -1,15 +1,6 @@
 {
   "intents": [
     {
-      "intent": "EtymologyIntent",
-      "slots": [
-        {
-          "name": "Word",
-          "type": "WORD_INPUT"
-        }
-      ]
-    },
-    {
       "intent": "AMAZON.StartOverIntent"
     },
     {
@@ -19,16 +10,19 @@
       "intent": "AMAZON.HelpIntent"
     },
     {
-      "intent": "AMAZON.YesIntent"
-    },
-    {
-      "intent": "AMAZON.NoIntent"
-    },
-    {
       "intent": "AMAZON.StopIntent"
     },
     {
       "intent": "AMAZON.CancelIntent"
+    },
+    {
+      "intent": "EtymologyIntent",
+      "slots": [
+        {
+          "name": "Word",
+          "type": "WORD_INPUT"
+        }
+      ]
     }
   ]
 }
