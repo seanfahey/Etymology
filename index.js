@@ -132,20 +132,15 @@ function handleWordRequest(intent, session, callback) {
 			"repromptText": speechReprompt
 		};
 
-	console.log('loggin it');
-
 	var http = require('http');
 	var options = {
 		host: 'www.etymonline.com',
 		path: '/index.php?term='+ intent.slots.Word.value
 	};
 	var request = http.get(options, function(response) {
-		console.log('in http.get');
-
 		// handle the response
 		var data = '';
 		response.on('data', function(chunk) {
-			console.log('response.on data');
 			data += chunk;
 		});
 		response.on('end', function() {
@@ -159,8 +154,10 @@ function handleWordRequest(intent, session, callback) {
 				entry = $('dd.highlight').text();
 
 			console.log(entry);
+			speechOutput = speechOutput + entry;
+			sessionAttributes.speechOutput = speechOutput;
 
-			callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput + entry, speechReprompt, true));
+			callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
 		});
 
 	});
