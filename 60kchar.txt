@@ -1048,7 +1048,6 @@ canada
 canadian
 canal
 canberra
-cancel
 cancellation
 cancelled
 cancer
@@ -3292,7 +3291,6 @@ helicopter
 hell
 hello
 helmet
-help
 helped
 helpful
 helping
@@ -4015,7 +4013,6 @@ latvia
 lauderdale
 laugh
 laughing
-launch
 launched
 laundry
 laura
@@ -4981,7 +4978,6 @@ onto
 oo
 ooo
 op
-open
 opened
 opening
 opera
@@ -5714,7 +5710,6 @@ quick
 quickly
 quiet
 quilt
-quit
 quite
 quiz
 quote
@@ -5945,7 +5940,6 @@ rental
 rentcom
 rep
 repair
-repeat
 repeated
 replace
 replaced
@@ -6730,7 +6724,6 @@ stanley
 star
 starring
 starsmerchant
-start
 started
 starter
 starting
@@ -6776,7 +6769,6 @@ stolen
 stomach
 stone
 stood
-stop
 stopped
 stopping
 storage
