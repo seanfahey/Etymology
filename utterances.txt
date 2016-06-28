@@ -28,9 +28,9 @@ EtymologyIntent where is {Word} from
 
 EtymologyIntent where is the word {Word} from
 
-EtymologyIntent where does {Word} come from
-
 EtymologyIntent where does the word {Word} come from
+
+EtymologyIntent where does {Word} come from
 
 EtymologyIntent how was {Word} first used
 
