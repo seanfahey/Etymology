@@ -16,7 +16,11 @@ TODO: setting up lambda
 
 ## Usage
 
-"Alexa, ask Etymology about the word 'plant'."
+"Alexa, ask Word Source about the word plant"
+
+"Alexa, ask Word Source about the word car"
+
+"Alexa, ask Word Source about the origin of the word colony"
 
 ## Notes
 

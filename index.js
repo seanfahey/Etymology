@@ -130,37 +130,49 @@ function handleWordRequest(intent, session, callback) {
 		sessionAttributes = {
 			"speechOutput": speechOutput,
 			"repromptText": speechReprompt
-		};
+		},
+		http = require('http'),
+		options = {
+			host: 'www.etymonline.com',
+			path: '/index.php?term='+ intent.slots.Word.value
+		},
+		request = http.get(options, function(response) {
+			console.log(intent.slots.Word.value);
 
-	var http = require('http');
-	var options = {
-		host: 'www.etymonline.com',
-		path: '/index.php?term='+ intent.slots.Word.value
-	};
-	var request = http.get(options, function(response) {
-		// handle the response
-		var data = '';
-		response.on('data', function(chunk) {
-			data += chunk;
-		});
-		response.on('end', function() {
-			console.log('response.on end');
-			console.log(data);
+			// handle the response
+			var data = '';
+			response.on('data', function(chunk) {
+				data += chunk;
+			});
+			response.on('end', function() {
+				console.log('response.on end');
+				console.log(data);
 
-			//parse the input
-			var cheerio = require('cheerio'),
-				$ = cheerio.load(data),
+				//parse the input
+				var cheerio = require('cheerio'),
+					$ = cheerio.load(data);
+
+				// remove tables
+				$('table').remove();
+
 				//where the entry for etymonline is located on the page
-				entry = $('dd.highlight').text();
+				var entry = $('dd.highlight');
 
-			console.log(entry);
-			speechOutput = speechOutput + entry;
-			sessionAttributes.speechOutput = speechOutput;
+				// convert to text from html
+				entry =	entry.text();
+				console.log(entry);
 
-			callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
+				if(entry == '' || entry == null || typeof entry == 'undefined'){
+					entry = ' I could not find an entry for this word.'
+				}
+				speechOutput = speechOutput + entry;
+				sessionAttributes.speechOutput = speechOutput;
+
+				callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
+			});
+
 		});
 
-	});
 	request.on('error', function(err) {
 		console.log("Request error: " + err.message);
 
