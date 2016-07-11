@@ -1,20 +1,36 @@
 AMAZON.StartOverIntent start
 
+AMAZON.StartOverIntent and start
+
 AMAZON.RepeatIntent repeat
+
+AMAZON.RepeatIntent and repeat
 
 AMAZON.HelpIntent help
 
+AMAZON.HelpIntent and help
+
 AMAZON.StopIntent stop
+
+AMAZON.StopIntent and stop
 
 AMAZON.CancelIntent cancel
 
+AMAZON.CancelIntent and cancel
+
 AMAZON.StopIntent exit
 
+AMAZON.StopIntent and exit
+
 AMAZON.StopIntent quit
+
+AMAZON.StopIntent and quit
 
 EtymologyIntent what is the etymology of {Word}
 
 EtymologyIntent what is the etymology of the word {Word}
+
+EtymologyIntent the origin of the word {Word}
 
 EtymologyIntent what is the origin of {Word}
 
@@ -39,6 +55,8 @@ EtymologyIntent how was the word {Word} first used
 EtymologyIntent why does {Word} mean what it does
 
 EtymologyIntent why does the word {Word} mean what it does
+
+EtymologyIntent the word {Word}
 
 EtymologyIntent about {Word}
 

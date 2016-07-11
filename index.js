@@ -67,22 +67,8 @@ function onIntent(intentRequest, session, callback) {
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
 
-    // handle yes/no intent after the user has been prompted
-    if (session.attributes && session.attributes.userPromptedToContinue) {
-        delete session.attributes.userPromptedToContinue;
-        if ("AMAZON.NoIntent" === intentName) {
-            handleFinishSessionRequest(intent, session, callback);
-        } else if ("AMAZON.YesIntent" === intentName) {
-            handleRepeatRequest(intent, session, callback);
-        }
-    }
-
     // dispatch custom intents to handlers here
     if ("EtymologyIntent" === intentName) {
-        handleWordRequest(intent, session, callback);
-    } else if ("AMAZON.YesIntent" === intentName) {
-        handleWordRequest(intent, session, callback);
-    } else if ("AMAZON.NoIntent" === intentName) {
         handleWordRequest(intent, session, callback);
     } else if ("AMAZON.StartOverIntent" === intentName) {
         getWelcomeResponse(callback);
@@ -199,9 +185,6 @@ function handleRepeatRequest(intent, session, callback) {
  * @param callback
  */
 function handleGetHelpRequest(intent, session, callback) {
-    // Set a flag to track that we're in the Help state.
-    session.attributes.userPromptedToContinue = true;
-
     var speechOutput = "Ask me about the origin of a word and I will tell you about it.",
         repromptText = "Would you like to ask about another word?";
     callback(session.attributes,
