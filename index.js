@@ -1,5 +1,7 @@
 'use strict';
 
+var env = require('./env.js');
+
 var speechReprompt =  "What word would you like me to find out about?";
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -8,7 +10,7 @@ exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
-        if (event.session.application.applicationId !== "***REMOVED***") {
+        if (event.session.application.applicationId !== env.application_id) {
             context.fail("Invalid Application ID");
         }
 
