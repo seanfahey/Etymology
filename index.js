@@ -1,7 +1,5 @@
 'use strict';
 
-var env = require('./env.js');
-
 var speechReprompt =  "What word would you like me to find out about?";
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -10,7 +8,7 @@ exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
-        if (event.session.application.applicationId !== env.application_id) {
+        if (event.session.application.applicationId !== '') {
             context.fail("Invalid Application ID");
         }
 
@@ -122,7 +120,7 @@ function handleWordRequest(intent, session, callback) {
 		http = require('http'),
 		options = {
 			host: 'www.etymonline.com',
-			path: '/index.php?term='+ intent.slots.Word.value
+			path: '/word/'+ intent.slots.Word.value
 		},
 		request = http.get(options, function(response) {
 			console.log(intent.slots.Word.value);
@@ -144,7 +142,7 @@ function handleWordRequest(intent, session, callback) {
 				$('table').remove();
 
 				//where the entry for etymonline is located on the page
-				var entry = $('dd.highlight');
+				var entry = $("section[class^=word__defination]");
 
 				// convert to text from html
 				entry =	entry.text();
