@@ -1,6 +1,6 @@
 'use strict';
 
-var speechReprompt =  "What word would you like me to find out about?";
+var speechReprompt =  "<speak>What word would you like me to find out about?</speak>";
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
@@ -117,12 +117,12 @@ function handleWordRequest(intent, session, callback) {
 			"speechOutput": speechOutput,
 			"repromptText": speechReprompt
 		},
-		http = require('http'),
+		https = require('https'),
 		options = {
 			host: 'www.etymonline.com',
 			path: '/word/'+ intent.slots.Word.value
 		},
-		request = http.get(options, function(response) {
+		request = https.get(options, function(response) {
 			console.log(intent.slots.Word.value);
 
 			// handle the response
@@ -138,21 +138,22 @@ function handleWordRequest(intent, session, callback) {
 				var cheerio = require('cheerio'),
 					$ = cheerio.load(data);
 
-				// remove tables
-				$('table').remove();
+				console.log('loaded cheerio');
 
 				//where the entry for etymonline is located on the page
 				var entry = $("section[class^=word__defination]");
 
+				console.log('found entry');
+
 				// convert to text from html
-				entry =	entry.text();
+				entry =	'<prosody rate="slow">' + entry.text() + '</prosody>';
 				console.log(entry);
 
 				if(entry == '' || entry == null || typeof entry == 'undefined'){
-					entry = ' I could not find an entry for this word.'
+					entry = '<speak>I could not find an entry for this word. </speak>'
 				}
 				speechOutput = speechOutput + entry;
-				sessionAttributes.speechOutput = speechOutput;
+				sessionAttributes.speechOutput = '<speak>' + speechOutput + '</speak>';
 
 				callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
 			});
@@ -202,8 +203,8 @@ function handleFinishSessionRequest(intent, session, callback) {
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
     return {
         outputSpeech: {
-            type: "PlainText",
-            text: output
+            type: "SSML",
+            ssml: output
         },
         card: {
             type: "Simple",
@@ -212,7 +213,7 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
         },
         reprompt: {
             outputSpeech: {
-                type: "PlainText",
+                type: "SSML",
                 text: repromptText
             }
         },
