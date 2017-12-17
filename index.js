@@ -146,7 +146,7 @@ function handleWordRequest(intent, session, callback) {
 				console.log('found entry');
 
 				// convert to text from html
-				entry =	'<prosody rate="slow">' + entry.text() + '</prosody>';
+				entry =	'<prosody rate="85%">' + entry.text() + '</prosody>';
 				console.log(entry);
 
 				if(entry == '' || entry == null || typeof entry == 'undefined'){
@@ -201,6 +201,9 @@ function handleFinishSessionRequest(intent, session, callback) {
 // ------- Helper functions to build responses -------
 
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
+	//remove ssml from card output
+	var card_output = output.replace(/<.*?>/g, "");
+
     return {
         outputSpeech: {
             type: "SSML",
@@ -209,7 +212,7 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
         card: {
             type: "Simple",
             title: title,
-            content: output
+            content: card_output
         },
         reprompt: {
             outputSpeech: {
