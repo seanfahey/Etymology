@@ -2,8 +2,13 @@
 
 var speechReprompt =  "<speak>What word would you like me to find out about?</speak>";
 
-// Route the incoming request based on type (LaunchRequest, IntentRequest,
-// etc.) The JSON body of the request is provided in the event parameter.
+/**
+ * Route the incoming request based on type (LaunchRequest, IntentRequest,
+ * etc.) The JSON body of the request is provided in the event parameter.
+ *
+ * @param event
+ * @param context
+ */
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -100,6 +105,11 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 var CARD_TITLE = "Word Source";
 
+/**
+ * Get welcome response
+ *
+ * @param callback
+ */
 function getWelcomeResponse(callback) {
     var speechOutput = speechReprompt,
 		sessionAttributes = {
@@ -110,6 +120,14 @@ function getWelcomeResponse(callback) {
         buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
 }
 
+/**
+ * Handle word request
+ * TODO handle app actions like 'help', 'exit', 'stop', 'cancel'
+ *
+ * @param intent
+ * @param session
+ * @param callback
+ */
 function handleWordRequest(intent, session, callback) {
     var speechOutput = 'Ok, looking up ' + intent.slots.Word.value + '. ',
 		speechError = "Failed lookup",
@@ -146,14 +164,14 @@ function handleWordRequest(intent, session, callback) {
 				console.log('found entry');
 
 				// convert to text from html
-				entry =	'<prosody rate="85%">' + entry.text() + '</prosody>';
+				entry =	'<prosody rate="86%">' + entry.text() + '</prosody>';
 				console.log(entry);
 
 				if(entry == '' || entry == null || typeof entry == 'undefined'){
-					entry = '<speak>I could not find an entry for this word. </speak>'
+					entry = 'I could not find an entry for this word.'
 				}
-				speechOutput = speechOutput + entry;
-				sessionAttributes.speechOutput = '<speak>' + speechOutput + '</speak>';
+				speechOutput = '<speak>' + speechOutput + entry + '</speak>';
+				sessionAttributes.speechOutput = speechOutput;
 
 				callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
 			});
@@ -163,10 +181,17 @@ function handleWordRequest(intent, session, callback) {
 	request.on('error', function(err) {
 		console.log("Request error: " + err.message);
 
-		callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechError + "Request error: " + err.message, speechReprompt, false));
+		callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, "<speak>" + speechError + "Request error: " + err.message + "</speak>", speechReprompt, false));
 	});
 }
 
+/**
+ * Handle repeat request
+ *
+ * @param intent
+ * @param session
+ * @param callback
+ */
 function handleRepeatRequest(intent, session, callback) {
     // Repeat the previous speechOutput and repromptText from the session attributes if available
     // else start a new game session
@@ -192,6 +217,12 @@ function handleGetHelpRequest(intent, session, callback) {
         buildSpeechletResponseWithoutCard(speechOutput, repromptText, false));
 }
 
+/**
+ * Handle Finish Sesssion Request
+ * @param intent
+ * @param session
+ * @param callback
+ */
 function handleFinishSessionRequest(intent, session, callback) {
     // End the session with a "Good bye!" if the user wants to quit the game
     callback(session.attributes,
@@ -199,7 +230,14 @@ function handleFinishSessionRequest(intent, session, callback) {
 }
 
 // ------- Helper functions to build responses -------
-
+/**
+ * Build Speechlet Response
+ *
+ * @param title
+ * @param output
+ * @param repromptText
+ * @param shouldEndSession
+ */
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
 	//remove ssml from card output
 	var card_output = output.replace(/<.*?>/g, "");
@@ -217,13 +255,20 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
         reprompt: {
             outputSpeech: {
                 type: "SSML",
-                text: repromptText
+                ssml: repromptText
             }
         },
         shouldEndSession: shouldEndSession
     };
 }
 
+/**
+ * Build Speechlet Respone Without Card
+ * @param output
+ * @param repromptText
+ * @param shouldEndSession
+ * @returns {{outputSpeech: {type: string, text: *}, reprompt: {outputSpeech: {type: string, text: *}}, shouldEndSession: *}}
+ */
 function buildSpeechletResponseWithoutCard(output, repromptText, shouldEndSession) {
     return {
         outputSpeech: {
@@ -240,6 +285,13 @@ function buildSpeechletResponseWithoutCard(output, repromptText, shouldEndSessio
     };
 }
 
+/**
+ * Build Response
+ *
+ * @param sessionAttributes
+ * @param speechletResponse
+ * @returns {{version: string, sessionAttributes: *, response: *}}
+ */
 function buildResponse(sessionAttributes, speechletResponse) {
     return {
         version: "1.0",
