@@ -69,7 +69,7 @@ function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId
         + ", sessionId=" + session.sessionId);
 
-    var intent = intentRequest.intent,
+    let intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
 
     // dispatch custom intents to handlers here
@@ -111,7 +111,7 @@ var CARD_TITLE = "Word Source";
  * @param callback
  */
 function getWelcomeResponse(callback) {
-    var speechOutput = speechReprompt,
+    let speechOutput = speechReprompt,
 		sessionAttributes = {
         "speechOutput": speechOutput,
         "repromptText": speechReprompt
@@ -129,7 +129,7 @@ function getWelcomeResponse(callback) {
  * @param callback
  */
 function handleWordRequest(intent, session, callback) {
-    var speechOutput = 'Ok, looking up ' + intent.slots.Word.value + '. ',
+    let speechOutput = 'Ok, looking up ' + intent.slots.Word.value + '. ',
 		speechError = "Failed lookup",
 		sessionAttributes = {
 			"speechOutput": speechOutput,
@@ -144,7 +144,7 @@ function handleWordRequest(intent, session, callback) {
 			console.log(intent.slots.Word.value);
 
 			// handle the response
-			var data = '';
+			let data = '';
 			response.on('data', function(chunk) {
 				data += chunk;
 			});
@@ -152,14 +152,22 @@ function handleWordRequest(intent, session, callback) {
 				console.log('response.on end');
 				console.log(data);
 
-				//parse the input
-				var cheerio = require('cheerio'),
-					$ = cheerio.load(data);
+				const cheerio = require('cheerio');
 
-				console.log('loaded cheerio');
+				console.log('loading data in cheerio');
+
+				//parse the input
+				//try {
+					const $ = cheerio.load(data);
+					console.log('cheerio loaded');
+				//} catch (e) {
+				//	console.log(e);
+				//}
+
+				console.log('loaded data in cheerio');
 
 				//where the entry for etymonline is located on the page
-				var entry = $("section[class^=word__defination]");
+				let entry = $("section[class^=word__defination]");
 
 				console.log('found entry');
 
@@ -167,7 +175,7 @@ function handleWordRequest(intent, session, callback) {
 				entry =	'<prosody rate="86%">' + entry.text() + '</prosody>';
 				console.log(entry);
 
-				if(entry == '' || entry == null || typeof entry == 'undefined'){
+				if(entry === '' || entry == null || typeof entry === 'undefined'){
 					entry = 'I could not find an entry for this word.'
 				}
 				speechOutput = '<speak>' + speechOutput + entry + '</speak>';
@@ -211,10 +219,10 @@ function handleRepeatRequest(intent, session, callback) {
  * @param callback
  */
 function handleGetHelpRequest(intent, session, callback) {
-    var speechOutput = "Ask me about the origin of a word and I will tell you about it.",
-        repromptText = "Would you like to ask about another word?";
+    let speechOutput = "<speak>Ask me about the origin of a word and I will tell you about it.</speak>",
+        repromptText = "<speak>Would you like to ask about another word?</speak>";
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard(speechOutput, repromptText, false));
+		buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
 }
 
 /**
@@ -240,7 +248,7 @@ function handleFinishSessionRequest(intent, session, callback) {
  */
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
 	//remove ssml from card output
-	var card_output = output.replace(/<.*?>/g, "");
+	let card_output = output.replace(/<.*?>/g, "");
 
     return {
         outputSpeech: {
@@ -263,7 +271,7 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
 }
 
 /**
- * Build Speechlet Respone Without Card
+ * Build Speechlet Response Without Card
  * @param output
  * @param repromptText
  * @param shouldEndSession
