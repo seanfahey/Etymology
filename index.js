@@ -1,6 +1,6 @@
 'use strict';
 
-var speechReprompt =  "<speak>What word would you like me to find out about?</speak>";
+const speechReprompt =  "<speak>What word would you like me to find out about?</speak>";
 
 /**
  * Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -166,8 +166,21 @@ function handleWordRequest(intent, session, callback) {
 
 				console.log('loaded data in cheerio');
 
-				//where the entry for etymonline is located on the page
-				let entry = $("section[class^=word__defination]");
+				let entry;
+				try {
+					console.log('getting word__defination');
+
+					//where the entry for etymonline is located on the page
+					entry = $("section[class^=word__defination]");
+				} catch (e) {
+					console.log('failed getting word__defination');
+					console.log(e);
+
+					speechOutput = '<speak>There was a problem parsing the word definition. </speak>';
+					sessionAttributes.speechOutput = speechOutput;
+
+					callback(sessionAttributes, buildSpeechletResponse(CARD_TITLE, speechOutput, speechReprompt, true));
+				}
 
 				console.log('found entry');
 
